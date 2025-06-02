@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { formatTextContent } from "@/utils/formatMessageContent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /// Separate component to handle async markdown processing
 export default function MessageComponent({ message }: { message: any }) {
   const [formattedContent, setFormattedContent] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const messageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (message.role === "assistant") {
@@ -16,9 +17,14 @@ export default function MessageComponent({ message }: { message: any }) {
     }
   }, [message.content, message.role]);
 
+  useEffect(() => {
+    messageRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [message.content, message.role]);
+
+
   if (message.role === "user") {
     return (
-      <div className="flex justify-end">
+      <div className="flex justify-end" ref={messageRef}>
         <div className="bg-primary text-primary-foreground px-4 py-2 rounded-2xl rounded-tr-none max-w-full lg:max-w-[80%]">
           {message.content}
         </div>
